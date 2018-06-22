@@ -16,6 +16,7 @@ def make_complete_df(dataset_name):
     df = pd.concat(dfs, ignore_index=True)
     df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
     df.drop_duplicates(keep="last", inplace=True)
+    df.sort_values(by="timestamp", inplace=True)
     df.timestamp = pd.to_datetime(df.timestamp, utc=True)
     return df
 
