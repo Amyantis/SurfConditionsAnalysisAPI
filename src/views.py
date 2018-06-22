@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pandas as pd
 import pytz
@@ -16,7 +16,8 @@ class APISchema(Schema):
 
 
 class Resource(APISchema):
-    start_date = fields.DateTime(missing=datetime.now(tz=pytz.utc).isoformat())
+    start_date = fields.DateTime(
+        missing=(datetime.now(tz=pytz.utc) - timedelta(hours=1)).isoformat())
 
 
 class GlobalConditionsView(SwaggerView):
@@ -47,35 +48,55 @@ class GlobalConditionsView(SwaggerView):
 
 
 class TidesView(SwaggerView):
-    def get(self):
+    parameters = Resource
+
+    @use_kwargs(Resource())
+    def get(self, start_date):
         """ Gets the tides data. """
         df = get_tides_df()
+        df = df[df.timestamp > start_date]
         return df.to_json(orient='records')
 
 
 class WindView(SwaggerView):
-    def get(self):
+    parameters = Resource
+
+    @use_kwargs(Resource())
+    def get(self, start_date):
         """ Gets the wind data. """
         df = get_wind_df()
+        df = df[df.timestamp > start_date]
         return df.to_json(orient='records')
 
 
 class ConditionsView(SwaggerView):
-    def get(self):
+    parameters = Resource
+
+    @use_kwargs(Resource())
+    def get(self, start_date):
         """ Gets the conditions data. """
         df = get_conditions_df()
+        df = df[df.timestamp > start_date]
         return df.to_json(orient='records')
 
 
 class WavesView(SwaggerView):
-    def get(self):
+    parameters = Resource
+
+    @use_kwargs(Resource())
+    def get(self, start_date):
         """ Gets the waves data. """
         df = get_wave_df()
+        df = df[df.timestamp > start_date]
         return df.to_json(orient='records')
 
 
 class WeatherView(SwaggerView):
-    def get(self):
+    parameters = Resource
+
+    @use_kwargs(Resource())
+    def get(self, start_date):
         """ Gets the weather data. """
         df = get_weather_df()
+        df = df[df.timestamp > start_date]
         return df.to_json(orient='records')
