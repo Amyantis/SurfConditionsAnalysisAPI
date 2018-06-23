@@ -38,7 +38,8 @@ def get_wave_data(spot_id):
     df_wave = json_normalize(wave_data["data"]["wave"], sep="_")
     df_wave.timestamp = parse_timestamp_column(df_wave.timestamp)
     for i in range(len(df_wave.swells[0])):
-        data_swell_i = json_normalize(df_wave.swells.apply(lambda x: x[i]), sep="_")
+        data_swell_i = json_normalize(df_wave.swells.apply(lambda x: x[i]),
+                                      sep="_")
         data_swell_i.columns = \
             data_swell_i.columns.map(lambda x: "wave_%s_%d" % (x, i))
         df_wave = df_wave.join(data_swell_i, how='left')
@@ -65,3 +66,11 @@ def get_tides_data(spot_id):
     df_tides = json_normalize(tides_data["data"]["tides"], sep="_")
     df_tides.timestamp = parse_timestamp_column(df_tides.timestamp)
     return df_tides
+
+
+def get_conditions_data(spot_id):
+    conditions_data = get_data(spot_id, "conditions")
+    df_conditions = \
+        json_normalize(conditions_data["data"]["conditions"], sep="_")
+    df_conditions.timestamp = parse_timestamp_column(df_conditions.timestamp)
+    return df_conditions

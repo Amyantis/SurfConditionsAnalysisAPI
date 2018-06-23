@@ -4,7 +4,7 @@ from os.path import join
 
 from src import DATA_FOLDER, SPOT_IDS
 from src.scrap import get_tides_data, get_wind_data, get_weather_data, \
-    get_wave_data
+    get_wave_data, get_conditions_data
 
 
 def main():
@@ -58,6 +58,18 @@ def get_all_datasets(spot_id):
         logging.info("Saving data to %s.", path)
         df_tides.to_csv(path_or_buf=path, compression='gzip')
         logging.info("Tides data saved.")
+    except Exception as e:
+        logging.error(type(e), e)
+    logging.info("Finished.")
+    try:
+        logging.info("Starting to get conditions data (spot: `%s`).", spot_id)
+        df_conditions = get_conditions_data(spot_id)
+        filename = "conditions_{current_time}_{spot_id}.csv.gz" \
+            .format(current_time=current_time, spot_id=spot_id)
+        path = join(DATA_FOLDER, filename)
+        logging.info("Saving data to %s.", path)
+        df_conditions.to_csv(path_or_buf=path, compression='gzip')
+        logging.info("Conditions data saved.")
     except Exception as e:
         logging.error(type(e), e)
     logging.info("Finished.")
