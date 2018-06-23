@@ -2,8 +2,9 @@ import logging
 from datetime import datetime
 from os.path import join
 
-from src import DATA_FOLDER, SPOT_IDS
-from src.scrap import get_tides_data, get_wind_data, get_weather_data, \
+from src import DATA_FOLDER
+from src.scraper import SPOT_IDS
+from src.scraper.scrap import get_tides_data, get_wind_data, get_weather_data, \
     get_wave_data, get_conditions_data
 
 
@@ -23,7 +24,7 @@ def get_all_datasets(spot_id):
             .format(current_time=current_time, spot_id=spot_id)
         path = join(DATA_FOLDER, filename)
         logging.info("Saving data to %s.", path)
-        df_wave.to_csv(path_or_buf=path, compression='gzip')
+        df_wave.to_csv(path_or_buf=path, compression='gzip', index=False)
         logging.info("Wave data saved.")
     except Exception as e:
         logging.error(type(e), e)
@@ -34,7 +35,7 @@ def get_all_datasets(spot_id):
             .format(current_time=current_time, spot_id=spot_id)
         path = join(DATA_FOLDER, filename)
         logging.info("Saving data to %s.", path)
-        df_weather.to_csv(path_or_buf=path, compression='gzip')
+        df_weather.to_csv(path_or_buf=path, compression='gzip', index=False)
         logging.info("Weather data saved.")
     except Exception as e:
         logging.error(type(e), e)
@@ -45,7 +46,7 @@ def get_all_datasets(spot_id):
             .format(current_time=current_time, spot_id=spot_id)
         path = join(DATA_FOLDER, filename)
         logging.info("Saving data to %s.", path)
-        df_wind.to_csv(path_or_buf=path, compression='gzip')
+        df_wind.to_csv(path_or_buf=path, compression='gzip', index=False)
         logging.info("Wind data saved.")
     except Exception as e:
         logging.error(type(e), e)
@@ -56,7 +57,7 @@ def get_all_datasets(spot_id):
             .format(current_time=current_time, spot_id=spot_id)
         path = join(DATA_FOLDER, filename)
         logging.info("Saving data to %s.", path)
-        df_tides.to_csv(path_or_buf=path, compression='gzip')
+        df_tides.to_csv(path_or_buf=path, compression='gzip', index=False)
         logging.info("Tides data saved.")
     except Exception as e:
         logging.error(type(e), e)
@@ -68,7 +69,7 @@ def get_all_datasets(spot_id):
             .format(current_time=current_time, spot_id=spot_id)
         path = join(DATA_FOLDER, filename)
         logging.info("Saving data to %s.", path)
-        df_conditions.to_csv(path_or_buf=path, compression='gzip')
+        df_conditions.to_csv(path_or_buf=path, compression='gzip', index=False)
         logging.info("Conditions data saved.")
     except Exception as e:
         logging.error(type(e), e)

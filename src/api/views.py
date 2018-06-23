@@ -6,7 +6,7 @@ from flasgger import SwaggerView, fields
 from marshmallow import Schema
 from webargs.flaskparser import use_kwargs
 
-from src.datasets import get_wave_df, get_tides_df, get_weather_df, \
+from src.db.datasets import get_wave_df, get_tides_df, get_weather_df, \
     get_wind_df, get_conditions_df
 
 

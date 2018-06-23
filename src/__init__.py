@@ -7,10 +7,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s:%(name)s:%(levelname)s: %(message)s",
     handlers=[
-        logging.FileHandler(filename=join(DATA_FOLDER, "scraper.log")),
+        logging.FileHandler(filename=join(DATA_FOLDER, "%s.log" % __name__)),
         logging.StreamHandler()
     ],
 )
-
-LACANAU_SPOT_ID = "5842041f4e65fad6a7708c8d"
-SPOT_IDS = {LACANAU_SPOT_ID}

@@ -3,7 +3,7 @@ from flask import Flask
 from flask_compress import Compress
 from flask_cors import CORS
 
-from src.views import GlobalConditionsView, TidesView, WindView, \
+from src.api.views import GlobalConditionsView, TidesView, WindView, \
     ConditionsView, WavesView, WeatherView
 
 app = Flask(__name__)
