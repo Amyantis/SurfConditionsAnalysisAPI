@@ -2,14 +2,22 @@ import logging
 from datetime import datetime
 from os.path import join
 
+from tqdm import tqdm
+
 from src import DATA_FOLDER
-from src.scraper import SPOT_IDS
+from src.db.datasets import available_spots
 from src.scraper.scrap import get_tides_data, get_wind_data, get_weather_data, \
     get_wave_data, get_conditions_data
 
 
+def spot_set():
+    from src.api.app import app
+    with app.app_context():
+        return available_spots()
+
+
 def main():
-    for spot_id in SPOT_IDS:
+    for spot_id in tqdm(spot_set()):
         get_all_datasets(spot_id)
 
 

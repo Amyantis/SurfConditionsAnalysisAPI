@@ -1,12 +1,11 @@
 from flasgger import Swagger
-from flask import Flask
 from flask_compress import Compress
 from flask_cors import CORS
 
+from src.api.app import app
 from src.api.views import GlobalConditionsView, TidesView, WindView, \
-    ConditionsView, WavesView, WeatherView
+    ConditionsView, WavesView, WeatherView, SpotView
 
-app = Flask(__name__)
 swagger = Swagger(app)
 compress = Compress()
 compress.init_app(app)
@@ -29,6 +28,9 @@ app.add_url_rule('/tides.json',
                  methods=['GET'])
 app.add_url_rule('/global.json',
                  view_func=GlobalConditionsView.as_view('global.json'),
+                 methods=['GET'])
+app.add_url_rule('/spots.json',
+                 view_func=SpotView.as_view('spots.json'),
                  methods=['GET'])
 
 app.run(debug=True)

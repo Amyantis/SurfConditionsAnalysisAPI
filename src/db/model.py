@@ -1,16 +1,34 @@
 from datetime import datetime
 
+from dateutil.tz import tzutc
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import UniqueConstraint, types
 
 db = SQLAlchemy()
+
+
+class UTCDateTime(types.TypeDecorator):
+    impl = types.DateTime
+
+    def process_result_value(self, value, engine):
+        if value is None:
+            return
+        return value.replace(tzinfo=tzutc())
 
 
 class AlreadyReadFile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String, nullable=False, unique=True)
-    timestamp = db.Column(db.DateTime(timezone=True), nullable=False,
+    timestamp = db.Column(UTCDateTime(timezone=True), nullable=False,
                           default=datetime.utcnow)
+
+
+class Spot(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    api_id = db.Column(db.String, unique=True)
+    name = db.Column(db.String, nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
 
 
 class Wave(db.Model):
@@ -19,8 +37,10 @@ class Wave(db.Model):
     )
     id = db.Column(db.Integer, primary_key=True)
 
-    spot_id = db.Column(db.Integer, nullable=False)
-    timestamp = db.Column(db.DateTime(timezone=True), nullable=False)
+    spot_id = db.Column(db.String,
+                        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
+                        nullable=False)
+    timestamp = db.Column(UTCDateTime(timezone=True), nullable=False)
 
     surf_max = db.Column(db.Float, nullable=False)
     surf_min = db.Column(db.Float, nullable=False)
@@ -50,6 +70,8 @@ class Wave(db.Model):
     wave_optimalScore_5 = db.Column(db.Float, nullable=False)
     wave_period_5 = db.Column(db.Float, nullable=False)
 
+    spot = db.relationship("Spot")
+
 
 class Conditions(db.Model):
     __table_args__ = (
@@ -57,8 +79,10 @@ class Conditions(db.Model):
     )
     id = db.Column(db.Integer, primary_key=True)
 
-    spot_id = db.Column(db.Integer, nullable=False)
-    timestamp = db.Column(db.DateTime(timezone=True), nullable=False)
+    spot_id = db.Column(db.String,
+                        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
+                        nullable=False)
+    timestamp = db.Column(UTCDateTime(timezone=True), nullable=False)
 
     am_humanRelation = db.Column(db.String, nullable=False)
     am_maxHeight = db.Column(db.Float, nullable=False)
@@ -76,6 +100,8 @@ class Conditions(db.Model):
     pm_plus = db.Column(db.Boolean, nullable=False)
     pm_rating = db.Column(db.Float, nullable=True)
 
+    spot = db.relationship("Spot")
+
 
 class Tide(db.Model):
     __table_args__ = (
@@ -83,11 +109,15 @@ class Tide(db.Model):
     )
     id = db.Column(db.Integer, primary_key=True)
 
-    spot_id = db.Column(db.Integer, nullable=False)
-    timestamp = db.Column(db.DateTime(timezone=True), nullable=False)
+    spot_id = db.Column(db.String,
+                        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
+                        nullable=False)
+    timestamp = db.Column(UTCDateTime(timezone=True), nullable=False)
 
     height = db.Column(db.Float, nullable=False)
     type = db.Column(db.String, nullable=False)
+
+    spot = db.relationship("Spot")
 
 
 class Weather(db.Model):
@@ -96,11 +126,15 @@ class Weather(db.Model):
     )
     id = db.Column(db.Integer, primary_key=True)
 
-    spot_id = db.Column(db.Integer, nullable=False)
-    timestamp = db.Column(db.DateTime(timezone=True), nullable=False)
+    spot_id = db.Column(db.String,
+                        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
+                        nullable=False)
+    timestamp = db.Column(UTCDateTime(timezone=True), nullable=False)
 
     condition = db.Column(db.String, nullable=False)
     temperature = db.Column(db.Float, nullable=False)
+
+    spot = db.relationship("Spot")
 
 
 class Wind(db.Model):
@@ -109,9 +143,13 @@ class Wind(db.Model):
     )
     id = db.Column(db.Integer, primary_key=True)
 
-    spot_id = db.Column(db.Integer, nullable=False)
-    timestamp = db.Column(db.DateTime(timezone=True), nullable=False)
+    spot_id = db.Column(db.String,
+                        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
+                        nullable=False)
+    timestamp = db.Column(UTCDateTime(timezone=True), nullable=False)
 
     direction = db.Column(db.Float, nullable=False)
     optimalScore = db.Column(db.Float, nullable=False)
     speed = db.Column(db.Float, nullable=False)
+
+    spot = db.relationship("Spot")
