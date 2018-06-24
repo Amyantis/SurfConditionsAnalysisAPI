@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from multiprocessing.pool import Pool
 from os.path import join
 
 from tqdm import tqdm
@@ -17,7 +18,14 @@ def spot_set():
 
 
 def main():
-    for spot_id in tqdm(spot_set()):
+    s = spot_set()
+    with Pool(12) as p:
+        for _ in tqdm(p.imap(get_all_datasets, s), total=len(s)):
+            pass
+
+
+def main_using_monothread():
+    for spot_id in spot_set():
         get_all_datasets(spot_id)
 
 
