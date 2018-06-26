@@ -38,5 +38,5 @@ def available_spots():
 
 
 def available_spots_df():
-    query = db.session.query(Spot).order_by(Spot.name.asc())
+    query = db.session.query(Spot).filter(Spot.country.isnot(None)).order_by(Spot.name.asc())
     return pd.read_sql_query(query.statement, db.session.bind)

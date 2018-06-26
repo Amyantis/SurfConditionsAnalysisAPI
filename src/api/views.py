@@ -22,7 +22,7 @@ def parse_spot(spot_id):
 
 class Resource(APISchema):
     start_date = fields.DateTime(
-        missing=(datetime.now(tz=pytz.utc) - timedelta(days=300)).isoformat())
+        missing=(datetime.now(tz=pytz.utc) - timedelta(days=1)).isoformat())
     spot = fields.Function(
         missing="5842041f4e65fad6a7708c8d", deserialize=parse_spot, load_from='spot_id')
 

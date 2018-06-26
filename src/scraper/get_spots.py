@@ -25,7 +25,7 @@ def parse_data(json_data):
 def import_spots(df_spots):
     logging.info("Import %d spots.", len(df_spots))
     db.session.add_all((
-        Spot(api_id=spot._id, name=spot.name, latitude=spot.lat,
+        Spot(api_id=spot._id, name=spot["name"], latitude=spot.lat,
              longitude=spot.lon) for idx, spot in df_spots.iterrows()))
     db.session.commit()
     logging.info("Spots import successful.")

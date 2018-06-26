@@ -1,1 +1,1 @@
-SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
+SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:postgres@localhost:5432/surfdb'
