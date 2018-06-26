@@ -1,5 +1,8 @@
+import logging
 from datetime import datetime
+from time import sleep
 
+import geocoder as geocoder
 from dateutil.tz import tzutc
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import UniqueConstraint, types
@@ -29,6 +32,30 @@ class Spot(db.Model):
     name = db.Column(db.String, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
+
+    city = db.Column(db.String, nullable=True)
+    state = db.Column(db.String, nullable=True)
+    state_long = db.Column(db.String, nullable=True)
+    country = db.Column(db.String, nullable=True)
+    country_long = db.Column(db.String, nullable=True)
+
+    def update_geodata(self):
+        g = geocoder.osm([self.latitude, self.longitude], method='reverse')
+        self.city = g.city
+        self.state = g.state
+        self.country = g.country
+
+    @staticmethod
+    def update_all_geodata():
+        from src.api.app import app
+        with app.app_context():
+            for i, spot in enumerate(db.session.query(Spot).filter_by(country=None)):
+                spot.update_geodata()
+                sleep(1)
+                if i % 100:
+                    logging.info("Updating 100 spots geodata.")
+                    db.session.commit()
+            db.session.commit()
 
 
 class Wave(db.Model):
@@ -153,3 +180,11 @@ class Wind(db.Model):
     speed = db.Column(db.Float, nullable=False)
 
     spot = db.relationship("Spot")
+
+
+def main():
+    Spot.update_all_geodata()
+
+
+if __name__ == "__main__":
+    main()

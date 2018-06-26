@@ -30,7 +30,7 @@ app.add_url_rule('/global.json',
                  view_func=GlobalConditionsView.as_view('global.json'),
                  methods=['GET'])
 app.add_url_rule('/spots.json',
-                 view_func=SpotView.as_view('spots.json'),
+                 view_func=SpotView.as_view('gu'),
                  methods=['GET'])
 
 app.run(debug=True)
