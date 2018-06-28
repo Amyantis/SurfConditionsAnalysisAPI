@@ -33,4 +33,4 @@ app.add_url_rule('/spots.json',
                  view_func=SpotView.as_view('gu'),
                  methods=['GET'])
 
-app.run()
+app.run(host="0.0.0.0", debug=False)
