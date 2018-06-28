@@ -7,7 +7,7 @@ from dateutil.tz import tzutc
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import UniqueConstraint, types
 
-db = SQLAlchemy()
+db = SQLAlchemy(session_options={"autoflush": False})
 
 
 class UTCDateTime(types.TypeDecorator):

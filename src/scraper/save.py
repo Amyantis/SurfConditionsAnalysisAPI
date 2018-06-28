@@ -19,7 +19,7 @@ def spot_set():
 
 def main():
     s = spot_set()
-    with Pool(20) as p:
+    with Pool(8) as p:
         for _ in tqdm(p.imap(get_all_datasets, s), total=len(s)):
             pass
 
