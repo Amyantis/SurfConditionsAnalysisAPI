@@ -62,6 +62,9 @@ def upsert_records(records, spot_id, table):
     n_old = query.count()
     for old_record in query:
         timestamp = old_record.timestamp.isoformat()
+        if timestamp not in new_records_dict:
+            # ToDo
+            continue
         w = new_records_dict.pop(timestamp)
         w.id = old_record.id
         db.session.merge(w)
