@@ -6,7 +6,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from src import DATA_FOLDER
-from src.db.model import db, AlreadyReadFile, Wave, Conditions, Tide, Weather, \
+from src.db.model import db, AlreadyReadFile, Wave, Tide, Weather, \
     Wind
 from src.scraper.scrap import DATASETS
 
@@ -31,7 +31,7 @@ def get_files(dataset_name):
 
 def import_dataset(dataset_name, table):
     files = get_files(dataset_name=dataset_name)
-    logging.info("{nb_files} files to import in {table_name}."
+    logging.info("{nb_files} files to import in {table_name}.   "
                  .format(nb_files=len(files), table_name=table.__name__))
     n_new = 0
     n_old = 0
@@ -43,9 +43,9 @@ def import_dataset(dataset_name, table):
         db.session.add(AlreadyReadFile(filename=f))
         n_new = _n_new
         n_old = _n_old
+        db.session.commit()
     logging.info("Inserted {n_new} / updated {n_old} records in {table_name}."
                  .format(n_new=n_new, n_old=n_old, table_name=table.__name__))
-    db.session.commit()
 
 
 def upsert_records(records, spot_id, table):
