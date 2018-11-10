@@ -1,8 +1,5 @@
-import logging
 from datetime import datetime
-from time import sleep
 
-import geocoder as geocoder
 from dateutil.tz import tzutc
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import UniqueConstraint, types
@@ -22,8 +19,8 @@ class UTCDateTime(types.TypeDecorator):
 class AlreadyReadFile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String, nullable=False, unique=True)
-    timestamp = db.Column(UTCDateTime(timezone=True), nullable=False,
-                          default=datetime.utcnow)
+    timestamp = db.Column(
+        UTCDateTime(timezone=True), nullable=False, default=datetime.utcnow)
 
 
 class Spot(db.Model):
@@ -39,34 +36,15 @@ class Spot(db.Model):
     country = db.Column(db.String, nullable=True)
     country_long = db.Column(db.String, nullable=True)
 
-    def update_geodata(self):
-        g = geocoder.osm([self.latitude, self.longitude], method='reverse')
-        self.city = g.city
-        self.state = g.state
-        self.country = g.country
-
-    @staticmethod
-    def update_all_geodata():
-        from src.api.app import app
-        with app.app_context():
-            for i, spot in enumerate(db.session.query(Spot).filter_by(country=None)):
-                spot.update_geodata()
-                sleep(1)
-                if i % 100:
-                    logging.info("Updating 100 spots geodata.")
-                    db.session.commit()
-            db.session.commit()
-
 
 class Wave(db.Model):
-    __table_args__ = (
-        UniqueConstraint('spot_id', 'timestamp'),
-    )
+    __table_args__ = (UniqueConstraint('spot_id', 'timestamp'), )
     id = db.Column(db.Integer, primary_key=True)
 
-    spot_id = db.Column(db.String,
-                        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
-                        nullable=False)
+    spot_id = db.Column(
+        db.String,
+        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
+        nullable=False)
     timestamp = db.Column(UTCDateTime(timezone=True), nullable=False)
 
     surf_max = db.Column(db.Float, nullable=False)
@@ -101,14 +79,13 @@ class Wave(db.Model):
 
 
 class Conditions(db.Model):
-    __table_args__ = (
-        UniqueConstraint('spot_id', 'timestamp'),
-    )
+    __table_args__ = (UniqueConstraint('spot_id', 'timestamp'), )
     id = db.Column(db.Integer, primary_key=True)
 
-    spot_id = db.Column(db.String,
-                        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
-                        nullable=False)
+    spot_id = db.Column(
+        db.String,
+        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
+        nullable=False)
     timestamp = db.Column(UTCDateTime(timezone=True), nullable=False)
 
     am_humanRelation = db.Column(db.String, nullable=False)
@@ -131,14 +108,13 @@ class Conditions(db.Model):
 
 
 class Tide(db.Model):
-    __table_args__ = (
-        UniqueConstraint('spot_id', 'timestamp'),
-    )
+    __table_args__ = (UniqueConstraint('spot_id', 'timestamp'), )
     id = db.Column(db.Integer, primary_key=True)
 
-    spot_id = db.Column(db.String,
-                        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
-                        nullable=False)
+    spot_id = db.Column(
+        db.String,
+        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
+        nullable=False)
     timestamp = db.Column(UTCDateTime(timezone=True), nullable=False)
 
     height = db.Column(db.Float, nullable=False)
@@ -148,14 +124,13 @@ class Tide(db.Model):
 
 
 class Weather(db.Model):
-    __table_args__ = (
-        UniqueConstraint('spot_id', 'timestamp'),
-    )
+    __table_args__ = (UniqueConstraint('spot_id', 'timestamp'), )
     id = db.Column(db.Integer, primary_key=True)
 
-    spot_id = db.Column(db.String,
-                        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
-                        nullable=False)
+    spot_id = db.Column(
+        db.String,
+        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
+        nullable=False)
     timestamp = db.Column(UTCDateTime(timezone=True), nullable=False)
 
     condition = db.Column(db.String, nullable=False)
@@ -165,14 +140,13 @@ class Weather(db.Model):
 
 
 class Wind(db.Model):
-    __table_args__ = (
-        UniqueConstraint('spot_id', 'timestamp'),
-    )
+    __table_args__ = (UniqueConstraint('spot_id', 'timestamp'), )
     id = db.Column(db.Integer, primary_key=True)
 
-    spot_id = db.Column(db.String,
-                        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
-                        nullable=False)
+    spot_id = db.Column(
+        db.String,
+        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
+        nullable=False)
     timestamp = db.Column(UTCDateTime(timezone=True), nullable=False)
 
     direction = db.Column(db.Float, nullable=False)
@@ -180,11 +154,3 @@ class Wind(db.Model):
     speed = db.Column(db.Float, nullable=False)
 
     spot = db.relationship("Spot")
-
-
-def main():
-    Spot.update_all_geodata()
-
-
-if __name__ == "__main__":
-    main()

@@ -1,0 +1,92 @@
+version: '3'
+services:
+  postgres:
+    container_name: postgres
+    restart: always
+    image: postgres:latest
+    volumes:
+    - ./postgres-data:/var/lib/postgresql/data
+    ports:
+    - "54322:5432"
+    environment:
+    - POSTGRES_DB=surfdb
+    - POSTGRES_USER=app_user
+    - POSTGRES_PASSWORD=password
+  postgrest:
+    image: postgrest/postgrest
+    restart: always
+    ports:
+    - "3000:3000"
+    links:
+    - postgres:db
+    environment:
+      PGRST_DB_URI: postgres://app_user:password@db:5432/surfdb
+      PGRST_DB_SCHEMA: public
+      PGRST_DB_ANON_ROLE: app_user
+    depends_on:
+    - postgres
+  get_spots:
+    container_name: get_spots
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+    - ./data:/data
+    depends_on:
+    - postgres
+    links:
+    - postgres:db
+    environment:
+    - DATA_FOLDER=/data
+    - SQLALCHEMY_DATABASE_URI=postgres://app_user:password@db:5432/surfdb
+    command: python ./src/scraper/spots/get_spots.py
+  get_spot_geodata:
+    container_name: get_spot_geodata
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+    - ./data:/data
+    depends_on:
+    - postgres
+    links:
+    - postgres:db
+    environment:
+    - DATA_FOLDER=/data
+    - SQLALCHEMY_DATABASE_URI=postgres://app_user:password@db:5432/surfdb
+    command: python ./src/scraper/spots/get_geodata.py
+  get_weather:
+    container_name: get_weather
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+    - ./data:/data
+    depends_on:
+    - get_spots
+    - postgres
+    links:
+    - postgres:db
+    environment:
+    - DATA_FOLDER=/data
+    - SQLALCHEMY_DATABASE_URI=postgres://app_user:password@db:5432/surfdb
+    - MULTITHREAD=true
+    command: python ./src/scraper/weather/save.py
+  import_weather:
+    container_name: import_weather
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+    - ./data:/data
+    depends_on:
+    - get_spots
+    - postgres
+    links:
+    - postgres:db
+    environment:
+    - DATA_FOLDER=/data
+    - SQLALCHEMY_DATABASE_URI=postgres://app_user:password@db:5432/surfdb
+    command: python ./src/scraper/weather/import.py
+

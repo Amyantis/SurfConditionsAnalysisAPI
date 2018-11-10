@@ -8,10 +8,12 @@ from tqdm import tqdm
 from src import DATA_FOLDER
 from src.db.model import db, AlreadyReadFile, Wave, Tide, Weather, \
     Wind
-from src.scraper.scrap import DATASETS
+from src.scraper.weather.scrap import DATASETS
 
-DATA_FILES = set([os.path.join(DATA_FOLDER, file)
-                  for file in os.listdir(DATA_FOLDER) if ".csv.gz" in file])
+DATA_FILES = set([
+    os.path.join(DATA_FOLDER, file) for file in os.listdir(DATA_FOLDER)
+    if ".csv.gz" in file
+])
 
 
 def already_imported_files():
@@ -31,8 +33,8 @@ def get_files(dataset_name):
 
 def import_dataset(dataset_name, table):
     files = get_files(dataset_name=dataset_name)
-    logging.info("{nb_files} files to import in {table_name}.   "
-                 .format(nb_files=len(files), table_name=table.__name__))
+    logging.info("{nb_files} files to import in {table_name}.   ".format(
+        nb_files=len(files), table_name=table.__name__))
     n_new = 0
     n_old = 0
     for f in tqdm(sorted(files)):
@@ -44,8 +46,9 @@ def import_dataset(dataset_name, table):
         n_new = _n_new
         n_old = _n_old
         db.session.commit()
-    logging.info("Inserted {n_new} / updated {n_old} records in {table_name}."
-                 .format(n_new=n_new, n_old=n_old, table_name=table.__name__))
+    logging.info(
+        "Inserted {n_new} / updated {n_old} records in {table_name}.".format(
+            n_new=n_new, n_old=n_old, table_name=table.__name__))
 
 
 def upsert_records(records, spot_id, table):
@@ -73,7 +76,7 @@ def upsert_records(records, spot_id, table):
 
 
 def main():
-    from src.api.app import app
+    from src.app import app
     with app.app_context():
         logging.info("Start importing.")
         import_dataset("wave", Wave)

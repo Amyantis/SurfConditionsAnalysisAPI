@@ -6,19 +6,19 @@ from os.path import join
 from tqdm import tqdm
 
 from src import DATA_FOLDER
-from src.db.datasets import available_spots
-from src.scraper.scrap import get_tides_data, get_wind_data, get_weather_data, \
+from src.db.model import db, Spot
+from src.scraper.weather.scrap import get_tides_data, get_wind_data, get_weather_data, \
     get_wave_data, get_conditions_data
 
 
 def spot_set():
-    from src.api.app import app
+    from src.app import app
     with app.app_context():
-        return available_spots()
+        return (spot.api_id for spot in db.session.query(Spot).all())
 
 
 def main():
-    s = spot_set()
+    s = list(spot_set())
     with Pool(8) as p:
         for _ in tqdm(p.imap(get_all_datasets, s), total=len(s)):
             pass
@@ -93,4 +93,9 @@ def get_all_datasets(spot_id):
 
 
 if __name__ == "__main__":
-    main()
+    import os
+
+    if "MULTITHREAD" in os.environ:
+        main_using_monothread()
+    else:
+        main()

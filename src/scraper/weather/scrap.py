@@ -18,10 +18,11 @@ NB_DAYS = 6
 
 def get_data(spot_id, dataset, nb_days=NB_DAYS, interval_hours=INTERVAL_HOURS):
     assert dataset in DATASETS
-    url = URL.format(spot_id=spot_id,
-                     dataset=dataset,
-                     nb_days=nb_days,
-                     interval_hours=interval_hours)
+    url = URL.format(
+        spot_id=spot_id,
+        dataset=dataset,
+        nb_days=nb_days,
+        interval_hours=interval_hours)
     logging.info("Downloading %s...", url)
     with urlopen(url) as fdesc:
         data = fdesc.read()
@@ -38,8 +39,8 @@ def get_wave_data(spot_id):
     df_wave = json_normalize(wave_data["data"]["wave"], sep="_")
     df_wave.timestamp = parse_timestamp_column(df_wave.timestamp)
     for i in range(len(df_wave.swells[0])):
-        data_swell_i = json_normalize(df_wave.swells.apply(lambda x: x[i]),
-                                      sep="_")
+        data_swell_i = json_normalize(
+            df_wave.swells.apply(lambda x: x[i]), sep="_")
         data_swell_i.columns = \
             data_swell_i.columns.map(lambda x: "wave_%s_%d" % (x, i))
         df_wave = df_wave.join(data_swell_i, how='left')

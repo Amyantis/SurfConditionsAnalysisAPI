@@ -2,7 +2,7 @@ import json
 import logging
 from urllib.request import urlopen
 
-import pandas as pd
+from pandas.io.json import json_normalize
 
 from src.db.model import Spot, db
 
@@ -18,21 +18,23 @@ def get_data():
 
 
 def parse_data(json_data):
-    df_spots = pd.io.json.json_normalize(json_data["data"]["spots"])
-    return df_spots
+    return json_normalize(json_data["data"]["spots"])
 
 
 def import_spots(df_spots):
     logging.info("Import %d spots.", len(df_spots))
-    db.session.add_all((
-        Spot(api_id=spot._id, name=spot["name"], latitude=spot.lat,
-             longitude=spot.lon) for idx, spot in df_spots.iterrows()))
+    spots = (Spot(
+        api_id=spot._id,
+        name=spot["name"],
+        latitude=spot.lat,
+        longitude=spot.lon) for idx, spot in df_spots.iterrows())
+    db.session.add_all(spots)
     db.session.commit()
     logging.info("Spots import successful.")
 
 
 def main():
-    from src.api.app import app
+    from src.app import app
     with app.app_context():
         db.session.query(Spot).delete()
         import_spots(parse_data(get_data()))
