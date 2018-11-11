@@ -3,7 +3,7 @@ import os
 
 DATA_FOLDER = os.environ.get('DATA_FOLDER', default="/data")
 SQLALCHEMY_DATABASE_URI = \
-    os.environ.get('SQLALCHEMY_DATABASE_URI', default='postgresql://postgres:postgres@localhost:54322/surfdb')
+    os.environ.get('SQLALCHEMY_DATABASE_URI', default='postgresql://postgres:postgres@localhost:5432/surfdb')
 
 logging.basicConfig(
     level=logging.INFO,

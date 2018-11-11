@@ -3,7 +3,7 @@ from time import sleep
 
 import geocoder
 
-from src.db.model import db, Spot
+from src.model import db, Spot
 
 
 def update_geodata(spot):

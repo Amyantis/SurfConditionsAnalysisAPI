@@ -6,7 +6,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from src import DATA_FOLDER
-from src.db.model import db, AlreadyReadFile, Wave, Tide, Weather, \
+from src.model import db, AlreadyReadFile, Wave, Tide, Weather, \
     Wind
 from src.scraper.weather.scrap import DATASETS
 

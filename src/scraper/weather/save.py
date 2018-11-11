@@ -6,38 +6,38 @@ from os.path import join
 from tqdm import tqdm
 
 from src import DATA_FOLDER
-from src.db.model import db, Spot
+from src.model import db, Spot
 from src.scraper.weather.scrap import get_tides_data, get_wind_data, get_weather_data, \
     get_wave_data, get_conditions_data
 
 
-def spot_set():
+def spots():
     from src.app import app
     with app.app_context():
-        return (spot.api_id for spot in db.session.query(Spot).all())
+        return db.session.query(Spot)
 
 
 def main():
-    s = list(spot_set())
+    s = list(spots())
     with Pool(8) as p:
         for _ in tqdm(p.imap(get_all_datasets, s), total=len(s)):
             pass
 
 
 def main_using_monothread():
-    for spot_id in spot_set():
-        get_all_datasets(spot_id)
+    for spot in spots():
+        get_all_datasets(spot)
 
 
-def get_all_datasets(spot_id):
+def get_all_datasets(spot):
     current_time = datetime.now().isoformat()
     logging.info("Starting to get the data (spot: `%s`), current time: %s.",
-                 spot_id, current_time)
+                 spot.id, current_time)
     try:
-        logging.info("Starting to get wave data (spot: `%s`).", spot_id)
-        df_wave = get_wave_data(spot_id)
-        filename = "wave_{current_time}_{spot_id}.csv.gz" \
-            .format(current_time=current_time, spot_id=spot_id)
+        logging.info("Starting to get wave data (spot: `%s`).", spot.id)
+        df_wave = get_wave_data(spot.api_id)
+        filename = "wave_{current_time}_{spot_id}.csv.gz".format(
+            current_time=current_time, spot_id=spot.id)
         path = join(DATA_FOLDER, filename)
         logging.info("Saving data to %s.", path)
         df_wave.to_csv(path_or_buf=path, compression='gzip', index=False)
@@ -45,10 +45,10 @@ def get_all_datasets(spot_id):
     except Exception as e:
         logging.error(type(e), e)
     try:
-        logging.info("Starting to get weather data (spot: `%s`).", spot_id)
-        df_weather = get_weather_data(spot_id)
-        filename = "weather_{current_time}_{spot_id}.csv.gz" \
-            .format(current_time=current_time, spot_id=spot_id)
+        logging.info("Starting to get weather data (spot: `%s`).", spot.id)
+        df_weather = get_weather_data(spot.api_id)
+        filename = "weather_{current_time}_{spot_id}.csv.gz".format(
+            current_time=current_time, spot_id=spot.id)
         path = join(DATA_FOLDER, filename)
         logging.info("Saving data to %s.", path)
         df_weather.to_csv(path_or_buf=path, compression='gzip', index=False)
@@ -56,10 +56,10 @@ def get_all_datasets(spot_id):
     except Exception as e:
         logging.error(type(e), e)
     try:
-        logging.info("Starting to get wind data (spot: `%s`).", spot_id)
-        df_wind = get_wind_data(spot_id)
-        filename = "wind_{current_time}_{spot_id}.csv.gz" \
-            .format(current_time=current_time, spot_id=spot_id)
+        logging.info("Starting to get wind data (spot: `%s`).", spot.id)
+        df_wind = get_wind_data(spot.api_id)
+        filename = "wind_{current_time}_{spot_id}.csv.gz".format(
+            current_time=current_time, spot_id=spot.id)
         path = join(DATA_FOLDER, filename)
         logging.info("Saving data to %s.", path)
         df_wind.to_csv(path_or_buf=path, compression='gzip', index=False)
@@ -67,10 +67,10 @@ def get_all_datasets(spot_id):
     except Exception as e:
         logging.error(type(e), e)
     try:
-        logging.info("Starting to get tides data (spot: `%s`).", spot_id)
-        df_tides = get_tides_data(spot_id)
-        filename = "tides_{current_time}_{spot_id}.csv.gz" \
-            .format(current_time=current_time, spot_id=spot_id)
+        logging.info("Starting to get tides data (spot: `%s`).", spot.id)
+        df_tides = get_tides_data(spot.api_id)
+        filename = "tides_{current_time}_{spot_id}.csv.gz".format(
+            current_time=current_time, spot_id=spot.id)
         path = join(DATA_FOLDER, filename)
         logging.info("Saving data to %s.", path)
         df_tides.to_csv(path_or_buf=path, compression='gzip', index=False)
@@ -79,10 +79,10 @@ def get_all_datasets(spot_id):
         logging.error(type(e), e)
     logging.info("Finished.")
     try:
-        logging.info("Starting to get conditions data (spot: `%s`).", spot_id)
-        df_conditions = get_conditions_data(spot_id)
-        filename = "conditions_{current_time}_{spot_id}.csv.gz" \
-            .format(current_time=current_time, spot_id=spot_id)
+        logging.info("Starting to get conditions data (spot: `%s`).", spot.id)
+        df_conditions = get_conditions_data(spot.api_id)
+        filename = "conditions_{current_time}_{spot_id}.csv.gz".format(
+            current_time=current_time, spot_id=spot.id)
         path = join(DATA_FOLDER, filename)
         logging.info("Saving data to %s.", path)
         df_conditions.to_csv(path_or_buf=path, compression='gzip', index=False)

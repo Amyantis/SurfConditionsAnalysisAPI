@@ -4,7 +4,7 @@ from urllib.request import urlopen
 
 from pandas.io.json import json_normalize
 
-from src.db.model import Spot, db
+from src.model import Spot, db
 
 URL = "https://services.surfline.com/kbyg/mapview?south=-90&west=-180&north=90&east=180"
 

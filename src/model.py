@@ -40,10 +40,9 @@ class Spot(db.Model):
 class Wave(db.Model):
     __table_args__ = (UniqueConstraint('spot_id', 'timestamp'), )
     id = db.Column(db.Integer, primary_key=True)
-
     spot_id = db.Column(
-        db.String,
-        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
+        db.Integer,
+        db.ForeignKey('spot.id', ondelete='CASCADE'),
         nullable=False)
     timestamp = db.Column(UTCDateTime(timezone=True), nullable=False)
 
@@ -81,10 +80,9 @@ class Wave(db.Model):
 class Conditions(db.Model):
     __table_args__ = (UniqueConstraint('spot_id', 'timestamp'), )
     id = db.Column(db.Integer, primary_key=True)
-
     spot_id = db.Column(
-        db.String,
-        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
+        db.Integer,
+        db.ForeignKey('spot.id', ondelete='CASCADE'),
         nullable=False)
     timestamp = db.Column(UTCDateTime(timezone=True), nullable=False)
 
@@ -110,10 +108,9 @@ class Conditions(db.Model):
 class Tide(db.Model):
     __table_args__ = (UniqueConstraint('spot_id', 'timestamp'), )
     id = db.Column(db.Integer, primary_key=True)
-
     spot_id = db.Column(
-        db.String,
-        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
+        db.Integer,
+        db.ForeignKey('spot.id', ondelete='CASCADE'),
         nullable=False)
     timestamp = db.Column(UTCDateTime(timezone=True), nullable=False)
 
@@ -126,10 +123,9 @@ class Tide(db.Model):
 class Weather(db.Model):
     __table_args__ = (UniqueConstraint('spot_id', 'timestamp'), )
     id = db.Column(db.Integer, primary_key=True)
-
     spot_id = db.Column(
-        db.String,
-        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
+        db.Integer,
+        db.ForeignKey('spot.id', ondelete='CASCADE'),
         nullable=False)
     timestamp = db.Column(UTCDateTime(timezone=True), nullable=False)
 
@@ -142,10 +138,9 @@ class Weather(db.Model):
 class Wind(db.Model):
     __table_args__ = (UniqueConstraint('spot_id', 'timestamp'), )
     id = db.Column(db.Integer, primary_key=True)
-
     spot_id = db.Column(
-        db.String,
-        db.ForeignKey('spot.api_id', ondelete='CASCADE'),
+        db.Integer,
+        db.ForeignKey('spot.id', ondelete='CASCADE'),
         nullable=False)
     timestamp = db.Column(UTCDateTime(timezone=True), nullable=False)
 

@@ -2,7 +2,7 @@ from flask import Flask
 from sqlalchemy_utils import database_exists, create_database
 
 from src import SQLALCHEMY_DATABASE_URI
-from src.db.model import db
+from src.model import db
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
