@@ -2,7 +2,7 @@ Flask==1.0.2
 Flask-SQLAlchemy==2.3.2
 geocoder==1.38.1
 ipython==7.1.1
-numpy==1.15.4
+numpy==1.22.0
 pandas==0.23.4
 psycopg2==2.7.6
 psycopg2-binary==2.7.6
